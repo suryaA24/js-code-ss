@@ -1,0 +1,1155 @@
+var records = sdc.records;
+  for(var i = 0; i < records.length; i++) {
+      try {
+		  
+		  
+		  var personName_List_NEW = [];
+		 var personName_List = [];
+        if (records[i].value.CONTACT != null)
+		{
+		 for(var cl=0; cl < records[i].value.CONTACT.length ; cl++)
+              {
+		  var alternateLanguagesListPerson=[];
+          
+		   var flag = true;
+			//var EN_FLAG = 'Y';
+			//var JP_FLAG = 'Y';
+			
+			 for (var lis = 0; lis < personName_List.length; lis++)
+                 if (records[i].value['CONTACT'][cl]['CAMLOCATIONID'].toString() == personName_List[lis]) 
+				  {
+                        flag = false;
+                        break;
+                  }
+            
+                var personName ={};	
+                var personName_New={};				
+                if(flag == true)
+                  {
+         
+                  personName_New.givenName = records[i].value.CONTACT[cl].GIVENNAMEONE;//1002 changes updating from givenNameOne to givenName
+                  personName_New.middleName = records[i].value.CONTACT[cl].MIDDLENAME;
+                  personName_New.lastName = records[i].value.CONTACT[cl].LASTNAME;
+					
+				 var EN_alternateLanguagesperson={};  
+				  var JP_alternateLanguagesperson ={};
+				  
+				  if (records[i].value['CONTACT'][cl]['ENGivenNameOne']!= null || records[i].value['CONTACT'][cl]['ENLastName'] !=null)
+				 {
+					EN_alternateLanguagesperson.languageCode = "EN";
+					EN_alternateLanguagesperson.givenName = records[i].value['CONTACT'][cl]['ENGivenNameOne'];
+					EN_alternateLanguagesperson.lastName = records[i].value['CONTACT'][cl]['ENLastName'];
+					alternateLanguagesListPerson.push(EN_alternateLanguagesperson);
+					
+				 }
+
+				if (records[i].value['CONTACT'][cl]['JPGivenNameOne']!= null || records[i].value['CONTACT'][cl]['JPLastName'] !=null)
+				{
+					JP_alternateLanguagesperson.languageCode = "JP";
+					JP_alternateLanguagesperson.givenName = records[i].value['CONTACT'][cl]['JPGivenNameOne'];
+					JP_alternateLanguagesperson.lastName = records[i].value['CONTACT'][cl]['JPLastName'];
+					alternateLanguagesListPerson.push(JP_alternateLanguagesperson);
+					
+				}
+
+					personName_New.alternateLanguages = alternateLanguagesListPerson;   				  
+                  personName_New.title = records[i].value.CONTACT[cl].TITLE;
+				  personName_New.suffixCode = records[i].value.CONTACT[cl].SUFFIX;
+				  personName_New.prefixCode = records[i].value.CONTACT[cl].TITLE_NM;
+                  personName_New.nameUsageTypeCode = records[i].value.CONTACT[cl].NAMEUSAGETYPECODE;
+				  personName_New.nameUsage = records[i].value.CONTACT[cl].NAMEUSAGETYPEDESCRIPTION;
+                    
+                 personName_New.CamLocationId = records[i].value.CONTACT[cl].CAMLOCATIONID;
+                    personName_List.push(records[i].value.CONTACT[cl].CAMLOCATIONID.toString());
+			  personName_List_NEW.push(personName_New)
+				  }				 						
+				}
+        }
+		  
+		  
+		  
+		  
+  contactsList = [];
+  idArray = [];
+
+	if (records[i].value.CONTACT != null)
+		{
+			var alternateLanguagesList=[];
+			for (var cl =0; cl< records[i].value.CONTACT.length ; cl++) 
+			{
+			var flag = true;
+			var EN_FLAG = 'Y';
+			var JP_FLAG = 'Y';
+	  
+				for (var c=0; c< idArray.length; c++) 
+				{
+					if (records[i].value.CONTACT[cl].CAMLOCATIONID.toString() == idArray[c].toString()) 
+					{
+					flag= false;
+					break;
+					}
+				}
+				if(flag)
+				{
+				legacyAttributes = {}; 
+				  var items = {};
+                  items.XAddrSeqNum = records[i].value.CONTACT[cl].ADDRESSSEQUENCENUMBER;
+                  items.LEGACYGIICONTACTID = records[i].value.CONTACT[cl].GIICONTACTID;
+                  items.LEGACYORIGSYSCONTREF = records[i].value.CONTACT[cl].OrigSystemContactRef;  
+				  legacyAttributes.items=items;
+				  
+				  documentControl = {};
+                  documentControl.createdDate = records[i].value.CONTACT[cl].CREATEDDATE;
+                  documentControl.createdBy = records[i].value.CONTACT[cl].CREATEDBY;
+				  documentControl.createdDateUTC  = records[i].value.CONTACT[cl].CreatedDateUTC_CONT;
+                  documentControl.modifiedDate = records[i].value.CONTACT[cl].MODIFIEDDATE;
+                  documentControl.modifiedBy = records[i].value.CONTACT[cl].MODIFIEDBY;
+				  documentControl.modifiedDateUTC  = records[i].value.CONTACT[cl].ModifiedDateUTC_CONT;
+                  documentControl.endDate = records[i].value.CONTACT[cl].ENDDATE;
+				  
+				  
+				  auditControl = {};
+                  auditControl.createdBySalesRepNt = records[i].value.CONTACT[cl].CREATEBYUSERNTID;
+                  auditControl.modifiedBySalesRepNt = records[i].value.CONTACT[cl].MODIFYBYUSERNTID;
+                  auditControl.createdByEmail = records[i].value.CONTACT[cl].CREATEBYUSEREMAILID;
+                  auditControl.modifiedByEmail = records[i].value.CONTACT[cl].MODIFYBYUSEREMAILID;
+				  auditControl.createdBySalesRepId   = records[i].value.CONTACT[cl].CreateBySalesRepId_CONT;
+				  auditControl.modifiedBySalesRepId  = records[i].value.CONTACT[cl].ModifyBySalesRepId_CONT;
+				  
+				  var FINAL_PERSONNAME_LIST=[];
+				  
+				  for(var l=0; l < records[i].value.CONTACT.length; l++)
+					{
+					for (var n=0;n < personName_List_NEW.length; n++)
+					{
+						var personName = {};
+						if(personName_List_NEW[n].CamLocationId.toString() == records[i].value.CONTACT[l].CAMLOCATIONID.toString())
+						{							
+                  personName.givenName = personName_List_NEW[n].givenName;//1002 changes updating from givenNameOne to givenName
+                  personName.middleName = personName_List_NEW[n].middleName;
+                  personName.lastName = personName_List_NEW[n].lastName;
+				  personName.alternateLanguages = personName_List_NEW[n].alternateLanguages;   				  
+                  personName.title = personName_List_NEW[n].title;
+				  personName.suffixCode = personName_List_NEW[n].suffixCode;
+				  personName.prefixCode = personName_List_NEW[n].prefixCode;
+                  personName.nameUsageTypeCode = personName_List_NEW[n].nameUsageTypeCode;
+				  personName.nameUsage = personName_List_NEW[n].nameUsage;	
+			  FINAL_PERSONNAME_LIST.push(personName)
+						}						
+					}
+					}
+				
+			contact= {};
+			contact.siteId = records[i].value.CONTACT[cl].SITEID;
+			contact.contactId = records[i].value.CONTACT[cl].CONTACTID;
+			contact.displayName = records[i].value.CONTACT[cl].DISPLAYNAME;
+			contact.camLocationId = records[i].value.CONTACT[cl].CAMLOCATIONID;
+			contact.preferredLanguageValue = records[i].value.CONTACT[cl].CDLANGTP_EBR;
+			contact.preferredLanguageCode = records[i].value.CONTACT[cl].PREF_LANG_TP_CD;
+			contact.isPrimary = records[i].value.CONTACT[cl].ISPRIMARY;
+			contact.statusType = records[i].value.CONTACT[cl].CONTACTSTATUSTYPECODE;
+			contact.status = records[i].value.CONTACT[cl].CONTACTSTATUSTYPEVALUE;
+			contact.invoiceDeliveryMethod = records[i].value.CONTACT[cl].INVOICEDELIVERYMETHOD;
+			contact.consolidatedInvoicingIndicator = records[i].value.CONTACT[cl].CONSOLIDATEDINVOICINGINDICATOR;
+			contact.divisionDepartment = records[i].value.CONTACT[cl].DIVISIONDEPARTMENT;			  
+			contact.gdprEnabled = records[i].value.CONTACT[cl].gdprEnabled; //gdprEnabled
+			contact.rddCommunication = records[i].value.CONTACT[cl].RDD_COMMUNICATION;
+			ContactMethodList = [];
+			ResponsibilityList = [];
+			contact.contactMethods = ContactMethodList;
+			contact.responsibilities = ResponsibilityList;
+			contact.legacyAttributes = legacyAttributes;
+			contact.auditControl = auditControl;
+			contact.documentControl = documentControl;
+			contact.personName = FINAL_PERSONNAME_LIST[cl];
+			
+			if (records[i].value.CONTACTMETHD != null)				
+				{
+				 for(var pr=0; pr < records[i].value.CONTACTMETHD.length ; pr++)
+				 {
+					cmlistlen = [];
+					var flag = true;
+					for (var lis=0;lis<cmlistlen.length;lis++)
+					if(records[i].value.CONTACTMETHD[pr].CONTACTCAMLOCATIONID == cmlistlen[lis])
+					{
+                    flag = false;
+                    break;
+                    }
+					
+					phoneNumber_cmg = {};
+					phoneNumber_cmg.countryCode = records[i].value.CONTACTMETHD[pr].COUNTRYCODE;
+					phoneNumber_cmg.areaCode = records[i].value.CONTACTMETHD[pr].AREACODE;
+					phoneNumber_cmg.number = records[i].value.CONTACTMETHD[pr].PHONENUMBER;
+					phoneNumber_cmg.extension = records[i].value.CONTACTMETHD[pr].EXTENSION;
+					
+					auditControl_cmg = {};
+					auditControl_cmg.createdBySalesRepNt=records[i].value.CONTACTMETHD[pr].XCREATE_BY_USER_NT_ID;
+					auditControl_cmg.modifiedBySalesRepNt = records[i].value.CONTACTMETHD[pr].XMODIFY_BY_USER_NT_ID;
+					auditControl_cmg.createdByEmail = records[i].value.CONTACTMETHD[pr].XCREATE_BY_USER_EMAIL_ID;
+					auditControl_cmg.modifiedByEmail = records[i].value.CONTACTMETHD[pr].XMODIFY_BY_USER_EMAIL_ID;
+					auditControl_cmg.createdBySalesRepId  = records[i].value.CONTACTMETHD[pr].CreateBySalesRepId_CMG;
+					auditControl_cmg.modifiedBySalesRepId  = records[i].value.CONTACTMETHD[pr].ModifyBySalesRepId_CMG;
+					
+					documentControl_cmg = {};
+					documentControl_cmg.createdDate = records[i].value.CONTACTMETHD[pr].CreatedDate_CMG;
+					documentControl_cmg.createdBy = records[i].value.CONTACTMETHD[pr].CREATEDBY_CMG;
+					documentControl_cmg.createdDateUTC  = records[i].value.CONTACTMETHD[pr].CreatedDateUTC_CMG; 
+					documentControl_cmg.modifiedDate = records[i].value.CONTACTMETHD[pr].MODIFIEDDATE_CMG;
+					documentControl_cmg.modifiedBy = records[i].value.CONTACTMETHD[pr].MODIFIEDBY_CMG;
+					documentControl_cmg.modifiedDateUTC  = records[i].value.CONTACTMETHD[pr].ModifiedDateUTC_CMG;
+					documentControl_cmg.endDate = records[i].value.CONTACTMETHD[pr].ENDDATE_CMG;
+					
+					legacyAttributes_cmg = {};
+					items = {}; 
+					items.LEGACYGIIPHONEID = records[i].value.CONTACTMETHD[pr].GIICONTACTMETHODID;
+					items.LEGACYORIGSYSPHONEREF = records[i].value.CONTACTMETHD[pr].OrigSystemTelephoneRef;
+					legacyAttributes_cmg.items = items;
+					
+					innercontact={};
+					innercontact.usageTypeCode = records[i].value.CONTACTMETHD[pr].USAGETYPECODE;
+					innercontact.usageTypeValue = records[i].value.CONTACTMETHD[pr].USAGETYPEVALUE;                   
+					innercontact.purpose = records[i].value.CONTACTMETHD[pr].PURPOSECODE;
+					innercontact.purposeValue = records[i].value.CONTACTMETHD[pr].PURPOSEVALUE;
+					innercontact.typeCode = records[i].value.CONTACTMETHD[pr].TYPECODE;
+					innercontact.typeValue = records[i].value.CONTACTMETHD[pr].TYPEVALUE;
+					innercontact.fullPhoneNumber = records[i].value.CONTACTMETHD[pr].FULLPHONENUMBER;
+					innercontact.emailAddress = records[i].value.CONTACTMETHD[pr].EMAILADDRESS;
+					innercontact.isContactMethodVerified = records[i].value.CONTACTMETHD[pr].ISCONTACTMETHODVERIFIED;
+					innercontact.stnInfo = records[i].value.CONTACTMETHD[pr].VALIDATIONINFO;
+					innercontact.validationDescription = records[i].value.CONTACTMETHD[pr].VALIDATIONINFODESCRIPTION;
+					innercontact.validationStatusCode = records[i].value.CONTACTMETHD[pr].VALIDATIONINFOSTATUS;
+					innercontact.camLocationId_CONT = records[i].value.CONTACTMETHD[pr].CAMLOCATIONID;
+					innercontact.camLocationId = records[i].value.CONTACTMETHD[pr].CONTACTCAMLOCATIONID;
+					innercontact.id = records[i].value.CONTACTMETHD[pr].ID;
+					innercontact.isPrimary = records[i].value.CONTACTMETHD[pr].IsPrimary_CMG;
+					innercontact.contactMethodId = records[i].value.CONTACTMETHD[pr].CONTACTMETHODID;
+					innercontact.status = records[i].value.CONTACTMETHD[pr].CONTACTMETHODSTATUS;
+					innercontact.phoneNumber = phoneNumber_cmg;
+					innercontact.auditControl = auditControl_cmg;
+					innercontact.documentControl = documentControl_cmg;
+					innercontact.legacyAttributes = legacyAttributes_cmg;
+					ContactMethodList.push(innercontact);
+					cmlistlen.push(records[i].value.CONTACTMETHD[pr].CONTACTCAMLOCATIONID);
+                  }
+				 }
+				
+			if (records[i].value.RESPONSE != null)				
+				{
+					Responsibilitylenlist = [];
+					for(var sr=0; sr < records[i].value.RESPONSE.length ; sr++)
+					{
+					var flag = true;
+					for (var lis=0;lis<Responsibilitylenlist.length;lis++)
+					if(records[i].value.RESPONSE[sr].CAMLOCATIONID.toString()+''+records[i].value.RESPONSE[sr].CODE.toString()  == Responsibilitylenlist[lis])
+					{
+                    flag = false;
+                    break;
+					}
+						responsibilities = {};
+						if(flag)
+						{
+						responsibilities.description = records[i].value.RESPONSE[sr].DESCRIPTION;
+						responsibilities.code = records[i].value.RESPONSE[sr].CODE;
+						responsibilities.status = records[i].value.RESPONSE[sr].RESPSTATUS;
+						responsibilities.endDate = records[i].value.RESPONSE[sr].PURPOSE_END_DT;
+						responsibilities.camLocationId = records[i].value.RESPONSE[sr].CAMLOCATIONID;
+						ResponsibilityList.push(responsibilities);
+						Responsibilitylenlist.push(records[i].value.RESPONSE[sr].CAMLOCATIONID.toString()+''+records[i].value.RESPONSE[sr].CODE.toString());
+						}
+					}
+				}
+			
+			contactsList.push(contact);
+			idArray.push(records[i].value.CONTACT[cl].CAMLOCATIONID.toString());
+			}
+			}
+
+		for( var j =0; j<contactsList.length ; j++) 
+			{
+			var resp = contactsList[j].responsibilities
+			var newResponsibilities = [];
+			for ( var m =0; m < resp.length; m++) {
+              var contactStr = contactsList[j].camLocationId + '';
+              var respStr = resp[m].camLocationId + '';
+				if (contactStr == respStr) {
+                  delete resp[m].camLocationId;
+					newResponsibilities.push(resp[m]);
+				}
+			}
+			
+			var ContMeth = contactsList[j].contactMethods
+			var newcontactMethods = [];
+			for ( var k =0; k < ContMeth.length; k++) {
+              var contactStr = contactsList[j].camLocationId + '';
+              var ContMStr = ContMeth[k].camLocationId_CONT + '';
+				if (contactStr == ContMStr) {
+                  delete ContMeth[k].camLocationId_CONT;
+					newcontactMethods.push(ContMeth[k]);
+				}
+			}
+            //delete contactsList[j].responsibilities;
+			contactsList[j].responsibilities = newResponsibilities;
+			contactsList[j].contactMethods = newcontactMethods;
+			};
+		}   
+	
+		//purpose BO
+        var Purposes_List = [];
+        var Purposes_len_list = [];
+        var site_tax_file = state.flag;
+		if (records[i].value.SITES != null)
+		{
+			for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+				{
+					if ((records[i].value.SITES[cl].SiteId != null || records[i].value.SITES[cl].SiteId != '') || (records[i].value.SITES[cl].Type != null || records[i].value.SITES[cl].Type != ''))
+						{
+							var flag = true;
+							for (var lis=0;lis<Purposes_len_list.length;lis++)
+								if(records[i].value.SITES[cl].Type.toString()+''+records[i].value.SITES[cl].SiteId.toString() == Purposes_len_list[lis])
+									{
+										flag = false;
+										break;
+									}
+								var purpose ={};
+								if(flag)
+									{
+										purpose.primaryContactAtLocation = records[i].value.SITES[cl].PrimaryContactAtLocation;
+				                        purpose.type = records[i].value.SITES[cl].Type;
+				                        purpose.description = records[i].value.SITES[cl].PurposeValue;
+				                        purpose.isPrimary = records[i].value.SITES[cl].IsPrimary;
+				                        purpose.endDate = records[i].value.SITES[cl].PURPOSE_END_DT;
+				                        purpose.SiteId = records[i].value.SITES[cl].SiteId;
+				                        Purposes_List.push(purpose)
+				                        Purposes_len_list.push(records[i].value.SITES[cl].Type.toString() +''+ records[i].value.SITES[cl].SiteId.toString());
+									}
+						}
+				}
+		}
+		
+		//TAX BO
+		 var TAX_LIST=[];
+                 var TAXLIST_NEW=[];
+				 if (records[i].value.SITES != null)
+		{
+			for(var ti=0; ti < records[i].value.SITES.length ; ti++)
+				{
+					if ((records[i].value.SITES[ti].SiteId != null) && (records[i].value.SITES[ti].CAM_TAX_IDENTIFIER_ID != null)  && (records[i].value.SITES[ti].TaxType !=null))
+						{
+							var flag = true;
+							for (var lis=0;lis<TAX_LIST.length;lis++)
+								if(records[i].value.SITES[ti].CAM_TAX_IDENTIFIER_ID.toString()+''+records[i].value.SITES[ti].SiteId.toString()+records[i].value.SITES[ti].TaxType.toString()  == TAX_LIST[lis])
+									{
+										flag = false;
+										break;
+									}
+								var taxAttributes_new ={};
+								if(flag)
+									{
+										taxAttributes_new.number = records[i].value.SITES[ti].TaxNumber;
+										taxAttributes_new.encryptedNumber = records[i].value.SITES[ti].siteTaxNumberEncrypt;//0203 2024
+                                      taxAttributes_new.hashedNumber = records[i].value.SITES[ti].siteTaxNumberHash;//0203 2024
+					                    taxAttributes_new.type = records[i].value.SITES[ti].TaxType;
+					                    taxAttributes_new.subType = records[i].value.SITES[ti].TaxSubType;
+										taxAttributes_new.SiteId = records[i].value.SITES[ti].SiteId;
+										taxAttributes_new.CAM_TAX_IDENTIFIER_ID = records[i].value.SITES[ti].CAM_TAX_IDENTIFIER_ID;
+										taxAttributes_new.validationStatus = records[i].value.SITES[ti].ValidationStatus;
+										taxAttributes_new.validationExpiryDate = records[i].value.SITES[ti].ValidationExpiryDate;
+										taxAttributes_new.taxOfficeNumber = records[i].value.SITES[ti].TaxOffcNumber;
+										taxAttributes_new.validationMessage = records[i].value.SITES[ti].TaxErrorCode;
+										taxAttributes_new.endDate = records[i].value.SITES[ti].endDate;
+										TAXLIST_NEW.push(taxAttributes_new);
+				                        TAX_LIST.push(records[i].value.SITES[ti].CAM_TAX_IDENTIFIER_ID.toString()+''+ records[i].value.SITES[ti].SiteId.toString()+records[i].value.SITES[ti].TaxType.toString());
+									}
+						}
+				}
+		}
+		
+		
+		var count=0;
+				var count_length=[];
+				var dnb_list=[];
+				if(records[i].value.SITES != null)
+				{
+					
+					
+					for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+				{
+                  			var flag = true;
+							for (var lis=0;lis<count_length.length;lis++)
+								if(records[i].value.SITES[cl].Type.toString()+''+records[i].value.SITES[cl].SiteId.toString() == count_length[lis])
+									{
+										flag = false;
+										break;
+									}
+								var sitednb ={};
+								if(flag && records[i].value.SITES[cl].Type == 1000001 && records[i].value.SITES[cl].PURPOSE_END_DT == null)
+									{
+										sitednb.count = count+1;
+				                        sitednb.SiteId = records[i].value.SITES[cl].SiteId;
+				                        dnb_list.push(sitednb);
+				                        count_length.push(records[i].value.SITES[cl].Type.toString()+''+records[i].value.SITES[cl].SiteId.toString());
+									}
+									else
+									{
+										sitednb.count = count;
+				                        sitednb.SiteId = records[i].value.SITES[cl].SiteId;
+				                        dnb_list.push(sitednb);
+				                        count_length.push(records[i].value.SITES[cl].Type.toString()+''+records[i].value.SITES[cl].SiteId.toString());
+										
+									}
+								
+					
+				}
+			}
+		
+		
+         // SITES BO
+		 var Sites_List = [];
+		 var Address_List = [];
+		 var Address_List_NEW = [];
+		 
+         if(records[i].value.SITES != null)
+		 {
+
+            for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+              {
+				   var alternateLanguagesListAddr=[];
+					var TAX_LIST=[];
+                var flag = true;
+			
+			 for (var lis = 0; lis < Address_List.length; lis++)
+                 if (records[i].value['SITES'][cl]['SiteId'].toString() == Address_List[lis]) 
+				  {
+                        flag = false;
+                        break;
+                  }
+            
+                var address ={};	
+                var address_new={};				            
+                if(flag == true)
+                  {
+                    address_new.addressLineOne = records[i].value.SITES[cl].AddressLineOne;
+                    address_new.addressLineTwo = records[i].value.SITES[cl].AddressLineTwo;
+					address_new.addressLineThree = records[i].value.SITES[cl].AddressLineThree;
+                    address_new.addressLineFour = records[i].value.SITES[cl].AddressLineFour;
+					address_new.city = records[i].value.SITES[cl].City;
+					//address.country = records[i].value.SITES[cl].COUNTRY;
+					address_new.countryCode = records[i].value.SITES[cl].Country;					
+					//Newly added as part of JSON Standardization
+					address_new.cityCode = records[i].value.SITES[cl].CityCode;
+					address_new.county = records[i].value.SITES[cl].County;
+					address_new.suburb = records[i].value.SITES[cl].Suburb;
+					address_new.authDealerCode = records[i].value.SITES[cl].AdCode;
+					address_new.branchName = records[i].value.SITES[cl].BranchName;	
+					
+				var EN_alternateLanguagesAddr={};  
+				var JP_alternateLanguagesAddr ={}; 
+
+				if (records[i].value['SITES'][cl]['ENAddressLineOne'] != null || records[i].value['SITES'][cl]['ENAddressLineTwo'] != null || records[i].value['SITES'][cl]['ENAddressLineThree'] != null || records[i].value['SITES'][cl]['ENAddressLineFour'] != null || records[i].value['SITES'][cl]['EN_City'] != null || records[i].value['SITES'][cl]['EN_county'] != null )
+				{
+				 EN_alternateLanguagesAddr.languageCode = "EN";
+				 EN_alternateLanguagesAddr.addressLineOne = records[i].value['SITES'][cl]['ENAddressLineOne'];
+				 EN_alternateLanguagesAddr.addressLineTwo = records[i].value['SITES'][cl]['ENAddressLineTwo'];
+				 EN_alternateLanguagesAddr.addressLineThree = records[i].value['SITES'][cl]['ENAddressLineThree'];
+				 EN_alternateLanguagesAddr.addressLineFour = records[i].value['SITES'][cl]['ENAddressLineFour'];
+				 EN_alternateLanguagesAddr.city = records[i].value['SITES'][cl]['EN_City'];
+				 EN_alternateLanguagesAddr.county = records[i].value['SITES'][cl]['EN_county'];	 
+				 EN_alternateLanguagesAddr.countryCode = records[i].value['SITES'][cl]['EN_Country'];
+				 EN_alternateLanguagesAddr.provinceStateCode = records[i].value.SITES[cl].ProvinceStateCode;//
+				 EN_alternateLanguagesAddr.zipPostalCode = records[i].value.SITES[cl].ZipPostalCode; 
+				 EN_alternateLanguagesAddr.branchName = records[i].value.SITES[cl].ENBranchName;//1002 changes
+				 EN_alternateLanguagesAddr.suburb = records[i].value.SITES[cl].ENsuburb;//0402 changes	
+				 alternateLanguagesListAddr.push(EN_alternateLanguagesAddr);
+				}
+
+				if (records[i].value['SITES'][cl]['JPAddressLineOne'] != null || records[i].value['SITES'][cl]['JPAddressLineTwo'] != null || records[i].value['SITES'][cl]['JPAddressLineThree'] != null || records[i].value['SITES'][cl]['JPAddressLineFour'] != null )
+				{
+				 JP_alternateLanguagesAddr.languageCode = "JP";
+				 JP_alternateLanguagesAddr.addressLineOne = records[i].value['SITES'][cl]['JPAddressLineOne'];
+				 JP_alternateLanguagesAddr.addressLineTwo = records[i].value['SITES'][cl]['JPAddressLineTwo'];
+				 JP_alternateLanguagesAddr.addressLineThree = records[i].value['SITES'][cl]['JPAddressLineThree'];
+				 JP_alternateLanguagesAddr.addressLineFour = records[i].value['SITES'][cl]['JPAddressLineFour'];
+				 JP_alternateLanguagesAddr.city  = records[i].value['SITES'][cl]['JP_City'];
+				 JP_alternateLanguagesAddr.county  = records[i].value['SITES'][cl]['JP_county'];
+				 JP_alternateLanguagesAddr.countryCode  =records[i].value['SITES'][cl]['JP_Country'];
+				 JP_alternateLanguagesAddr.provinceStateCode  = records[i].value.SITES[cl].ProvinceStateCode;
+				 JP_alternateLanguagesAddr.zipPostalCode  = records[i].value.SITES[cl].ZipPostalCode;
+				 JP_alternateLanguagesAddr.branchName = records[i].value.SITES[cl].JPBranchName;	//1002 changes
+				 JP_alternateLanguagesAddr.suburb = records[i].value.SITES[cl].JPsuburb;//0402 changes	
+				 alternateLanguagesListAddr.push(JP_alternateLanguagesAddr);
+				}
+
+					address_new.alternateLanguages = alternateLanguagesListAddr;                    
+                    address_new.provinceStateCode = records[i].value.SITES[cl].ProvinceStateCode;
+                    address_new.zipPostalCode = records[i].value.SITES[cl].ZipPostalCode;
+                    address_new.isAddressVerified = records[i].value.SITES[cl].IsAddressVerified;
+					address_new.jpBranchName = records[i].value['SITES'][cl]['JPBranchName']; //New
+					address_new.pecEmail = records[i].value.SITES[cl].pecEmail;
+					address_new.eanNumber = records[i].value.SITES[cl].eannumber;					
+                    address_new.stnInfo = records[i].value.SITES[cl].ValidationInfo;
+                    address_new.validationDescription = records[i].value.SITES[cl].ValidationInfoDescription;
+                    address_new.validationStatusCode = records[i].value.SITES[cl].ValidationInfoStatus;
+					address_new.paymentTermCode = records[i].value.SITES[cl].paymentTermCode;//1002 changes moving to addresstag
+					address_new.receiverCode = records[i].value.SITES[cl].receiverCode;//1002 changes moving to addresstag
+                    address_new.bankName = records[i].value.SITES[cl].bankName;//NEW
+                    address_new.bankType = records[i].value.SITES[cl].bankType;//NEW
+					address_new.encryptedBankNumber = records[i].value.SITES[cl].bankTypeEncrypt;//NEW
+                    address_new.hashedBankNumber = records[i].value.SITES[cl].bankTypeHash;//NEW
+					
+					address_new.SiteId = records[i].value.SITES[cl].SiteId;
+                    Address_List.push(records[i].value.SITES[cl].SiteId.toString());
+			  Address_List_NEW.push(address_new)
+				  }
+			  
+			  
+			  
+			  }
+				 
+            //SITES -- DocumentControl
+            var SITES_DocumentControl_List = [];
+            for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+              {
+                var documentControl ={};
+                if(true)
+                  {
+                    documentControl.createdDate = records[i].value.SITES[cl].CreatedDate;
+                    documentControl.createdBy = records[i].value.SITES[cl].CreatedBy;
+					documentControl.createdDateUTC = records[i].value.SITES[cl].CreatedDateUTC; 
+                    documentControl.modifiedDate = records[i].value.SITES[cl].ModifiedDate;
+                    documentControl.modifiedBy = records[i].value.SITES[cl].ModifiedBy;
+					documentControl.modifiedDateUTC = records[i].value.SITES[cl].ModifiedDateUTC;
+                    documentControl.endDate = records[i].value.SITES[cl].EndDate;
+                    SITES_DocumentControl_List.push(documentControl);
+                  }
+              }
+			  
+			//SITES -- LegacySiteAttributes
+			var SITES_LegacySiteAttributes_List = [];
+            for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+              {
+                var legacyAttributes ={};
+				var items ={};
+                if(true)
+                  {
+                    items.LEGACYORIGSYSADDRREF  = records[i].value.SITES[cl].OrigSystemAddressRef; 
+                    items.LEGACYGIIADDRESSID  = records[i].value.SITES[cl].GiiAddressId; 
+					legacyAttributes.items = items;
+                    SITES_LegacySiteAttributes_List.push(legacyAttributes);
+                  }
+              }
+
+			// SITES -  AuditAttributes
+            var SITES_AuditAttributes_List = [];
+            for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+              {
+                var auditControl ={};
+                if(true)
+                  {
+                    auditControl.createdBySalesRepNt = records[i].value.SITES[cl].CreateByUserNtId;
+                    auditControl.modifiedBySalesRepNt = records[i].value.SITES[cl].ModifyByUserNtId;
+                    auditControl.createdByEmail = records[i].value.SITES[cl].CreateByUserEmailId;
+                    auditControl.modifiedByEmail = records[i].value.SITES[cl].ModifyByUserEmailId;
+					auditControl.createdBySalesRepId = records[i].value.SITES[cl].CreateBySalesRepId_RL;
+					auditControl.modifiedBySalesRepId = records[i].value.SITES[cl].ModifyBySalesRepId_RL;
+                    SITES_AuditAttributes_List.push(auditControl);
+                  }
+              }
+    
+			var SiteDunsIdentification_List = [];
+            for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+              {
+                var siteDunsIdentification ={};
+                var documentControl_duns ={};
+                if(true)
+                  {
+                    documentControl_duns.createdDate = records[i].value.SITES[0].Iden_CreatedDate;
+                    documentControl_duns.createdBy = records[i].value.SITES[0].Iden_CreatedBy;
+					documentControl_duns.createdDateUTC = records[i].value.SITES[0].Iden_CreatedDateUTC; 
+                    documentControl_duns.modifiedDate = records[i].value.SITES[0].Iden_ModifiedDate;
+                    documentControl_duns.modifiedBy = records[i].value.SITES[0].Iden_ModifiedBy;
+					documentControl_duns.modifiedDateUTC = records[i].value.SITES[0].Iden_ModifiedDateUTC;
+                    documentControl_duns.endDate = records[i].value.SITES[0].Iden_EndDate;
+                  }
+                if(true)
+                  {
+					siteDunsIdentification.dunsTypeCode = records[i].value.SITES[cl].DunsTypeCode;
+                    siteDunsIdentification.dunsTypeValue = records[i].value.SITES[cl].DunsTypeValue;
+                    siteDunsIdentification.dunsNum = records[i].value.SITES[cl].Dunsnum;
+                    siteDunsIdentification.status = records[i].value.SITES[cl].duns_status;
+					siteDunsIdentification.statusCode = records[i].value.SITES[cl].duns_statuscode;
+					siteDunsIdentification.documentControl=documentControl_duns
+                    SiteDunsIdentification_List.push(siteDunsIdentification);
+                  }
+              }
+
+				var siteidlist = [];
+                
+               for(var cl=0; cl < records[i].value.SITES.length ; cl++)
+               {
+                 var Final_Purposes_List = [];
+                var flag = true;
+                for (var lis=0;lis<siteidlist.length;lis++)
+                  if(records[i].value.SITES[cl].SiteId.toString()== siteidlist[lis])
+				  {
+                    flag = false;
+                    break;
+                  }
+				if(flag == true)
+				{
+                var sites ={};
+                if(records[i].value.SITES[cl].SiteId != null && flag )
+                  {
+					for (var n=0;n<Purposes_List.length;n++)
+					{
+						var purposes ={};
+						if(Purposes_List[n].SiteId.toString() == records[i].value.SITES[cl].SiteId.toString()){
+							purposes.primaryContactAtLocation = Purposes_List[n].primaryContactAtLocation
+			                purposes.type = Purposes_List[n].type;
+			                purposes.description = Purposes_List[n].description;
+			                purposes.isPrimary = Purposes_List[n].isPrimary;
+						    purposes.endDate = Purposes_List[n].endDate;
+                            Final_Purposes_List.push(purposes)}
+							//purposes.SiteId = Purposes_List[n].SiteId;
+			                
+					}
+					
+					var FINAL_TAX_LIST=[];
+						for (var n=0;n<TAXLIST_NEW.length;n++)
+					{
+						//var count=1;
+						//count=count+1;
+						var taxAttributes ={};
+						if(TAXLIST_NEW[n].SiteId.toString() == records[i].value.SITES[cl].SiteId.toString()){
+                          if(site_tax_file == "X")
+						    {
+							taxAttributes.number = TAXLIST_NEW[n].number;
+                            }
+							taxAttributes.encryptedNumber = TAXLIST_NEW[n].encryptedNumber;
+                            taxAttributes.hashedNumber = TAXLIST_NEW[n].hashedNumber;
+					        taxAttributes.type = TAXLIST_NEW[n].type;
+					        taxAttributes.subType = TAXLIST_NEW[n].subType;
+							taxAttributes.validationStatus = TAXLIST_NEW[n].validationStatus;
+							taxAttributes.validationExpiryDate = TAXLIST_NEW[n].validationExpiryDate;
+							taxAttributes.taxOfficeNumber = TAXLIST_NEW[n].taxOfficeNumber;
+							taxAttributes.validationMessage = TAXLIST_NEW[n].validationMessage;
+							taxAttributes.endDate = TAXLIST_NEW[n].endDate;
+                            FINAL_TAX_LIST.push(taxAttributes)
+							}
+							
+			                
+					}
+					
+					
+					var FINAL_ADDRESS_LIST=[];
+					for(var l=0; l < records[i].value.SITES.length ; l++)
+					{
+					for (var n=0;n<Address_List_NEW.length;n++)
+					{
+						var address ={};
+						if(Address_List_NEW[n].SiteId.toString() == records[i].value.SITES[l].SiteId.toString())
+						{
+							address.addressLineOne = Address_List_NEW[n]['addressLineOne'];
+              address.addressLineTwo = Address_List_NEW[n]['addressLineTwo'];
+			  address.addressLineThree = Address_List_NEW[n]['addressLineThree'];
+			  address.addressLineFour = Address_List_NEW[n]['addressLineFour'];
+              address.city = Address_List_NEW[n]['city'];
+              address.cityCode = Address_List_NEW[n]['cityCode'];
+			  address.countryCode = Address_List_NEW[n]['countryCode'];
+			  address.county = Address_List_NEW[n]['county'];
+			  address.suburb = Address_List_NEW[n]['suburb'];
+			  address.authDealerCode = Address_List_NEW[n]['authDealerCode'];
+			  address.branchName = Address_List_NEW[n]['branchName'];
+              address.provinceStateCode = Address_List_NEW[n]['provinceStateCode'];
+              address.zipPostalCode = Address_List_NEW[n]['zipPostalCode'];
+              address.isAddressVerified = Address_List_NEW[n]['isAddressVerified'];
+
+		      address.alternateLanguages = Address_List_NEW[n]['alternateLanguages'];
+			  address.jpBranchName = Address_List_NEW[n]['jpBranchName'];
+			  address.pecEmail = Address_List_NEW[n]['pecEmail'];
+			  address.eanNumber = Address_List_NEW[n]['eanNumber'];
+              address.stnInfo = Address_List_NEW[n]['stnInfo'];
+              address.validationDescription = Address_List_NEW[n]['validationDescription'];
+              address.validationStatusCode = Address_List_NEW[n]['validationStatusCode'];
+			  address.paymentTermCode = Address_List_NEW[n].paymentTermCode;// 1002 changes moving to addresstag					
+			 address.receiverCode = Address_List_NEW[n].receiverCode;// 1002 changes moving to addresstag
+              address.bankName = Address_List_NEW[n].bankName;//NEW
+			  if(site_tax_file == "X")
+			  {
+              address.bankType = Address_List_NEW[n].bankType;//NEW
+			  }
+			  address.encryptedBankNumber = Address_List_NEW[n].encryptedBankNumber;//NEW
+			  address.hashedBankNumber = Address_List_NEW[n].hashedBankNumber;//NEW
+			  address.taxAttributes=FINAL_TAX_LIST;	
+			  FINAL_ADDRESS_LIST.push(address)
+						}
+						
+					}
+					}
+					
+                    sites.siteId = records[i].value.SITES[cl].SiteId;
+                    sites.dnbMatchSubStatusCode = null;
+                    sites.dnbMatchSubStatus = null;
+						
+				for (var n=0;n<dnb_list.length;n++)
+					{
+						
+						if(dnb_list[n].SiteId.toString() == records[i].value.SITES[cl].SiteId.toString() && dnb_list[n].count>0)
+						{
+						 sites.dnbMatchSubStatusCode = records[i].value.SITES[cl].DnbMatchSubStatusCode;
+						sites.dnbMatchSubStatus = records[i].value.SITES[cl].DnbMatchSubStatus;  
+						}
+						
+					}
+
+				   
+					//sites.dunsNum = records[i].value.SITES[cl].Dunsnum; 
+					sites.statustype = records[i].value.SITES[cl].StatusTypeCode; 
+                    sites.status = records[i].value.SITES[cl].StatusTypeValue;  
+					//sites.pecEmail = records[i].value.SITES[cl].pecEmail; 
+					//sites.eanNumber = records[i].value.SITES[cl].eannumber;
+					//sites.CamSystemGenAddressKeyRef = records[i].value.SITES[cl].CamSystemGenAddressKeyRef;
+                    sites.siteDunsIdentification = SiteDunsIdentification_List[cl];
+                    sites.mailStop = records[i].value.SITES[cl].MailStop;
+					sites.gdprEnabled = records[i].value.SITES[cl].gdprEnabled;
+					//sites.paymentTermCode = records[i].value.SITES[cl].paymentTermCode;//1002 changes moving to addresstag
+					//sites.receiverCode = records[i].value.SITES[cl].receiverCode;//1002 changes moving to addresstag
+                    //Sites.Contacts = Contacts_List[cl];
+                    sites.address = FINAL_ADDRESS_LIST[cl];
+                    sites.purposes = Final_Purposes_List;
+                    sites.documentControl = SITES_DocumentControl_List[cl];
+                    sites.legacyAttributes = SITES_LegacySiteAttributes_List[cl];
+                    sites.auditControl = SITES_AuditAttributes_List[cl];
+                    Sites_List.push(sites);
+                    siteidlist.push(records[i].value.SITES[cl].SiteId.toString());
+                  }
+              }
+			   }
+         }	
+
+			// SalesRepDetail - DocumentControl
+			var SalesRepDetail_List = [];
+            if (records[i].value.SALESREP != null)
+            {
+             var sales_DocumentControl_List = [];
+             for(var sr=0; sr < records[i].value.SALESREP.length; sr++)
+              {
+				  
+				  for(var tu=0; tu < records[i].value.CUSTOMER.length ; tu++)
+				  {
+                var DocumentControl ={};
+                if(true)
+                  {
+                    DocumentControl.createdDate = records[i].value.CUSTOMER[tu].CreatedDate;
+					DocumentControl.createdBy = records[i].value.CUSTOMER[tu].CreatedBy;
+                    DocumentControl.modifiedDate = records[i].value.CUSTOMER[tu].ModifiedDate;
+                    DocumentControl.modifiedBy = records[i].value.CUSTOMER[tu].ModifiedBy;
+					DocumentControl.createdDateUTC = records[i].value.CUSTOMER[tu].createdDateUTC;//no utc fields in a_camsalesrep
+                    DocumentControl.modifiedDateUTC = records[i].value.CUSTOMER[tu].modifiedDateUTC;//no utc fields in a_camsalesrep
+                    DocumentControl.endDate = records[i].value.SALESREP[sr].EndDate;
+					sales_DocumentControl_List.push(DocumentControl);
+				  }	
+				  var AuditAttributes={};
+				  if(true)
+              {
+                AuditAttributes.createdBySalesRepNt = records[i].value.CUSTOMER[tu].CreateByUserNtId;
+                AuditAttributes.modifiedBySalesRepNt = records[i].value.CUSTOMER[tu].ModifyByUserNtId;
+                AuditAttributes.createdByEmail = records[i].value.CUSTOMER[tu].CreateByUserEmailId;
+                AuditAttributes.modifiedByEmail = records[i].value.CUSTOMER[tu].ModifyByUserEmailId;
+				AuditAttributes.createdBySalesRepId = records[i].value.CUSTOMER[tu].CreateBySalesRepId;
+                AuditAttributes.modifiedBySalesRepId = records[i].value.CUSTOMER[tu].ModifyBySalesRepId;
+                //sales_DocumentControl_List.push(AuditAttributes);
+              }
+			  }
+			  }
+			  
+			  // SalesRepDetail
+              for(var sr=0; sr < records[i].value.SALESREP.length ; sr++)
+              {
+                var SalesRepDetail ={};
+                if(records[i].value.SALESREP[sr].RoleType != undefined)
+                  {
+                    SalesRepDetail.roleType = records[i].value.SALESREP[sr].RoleType;
+                    SalesRepDetail.role = records[i].value.SALESREP[sr].Role;
+                    SalesRepDetail.id = records[i].value.SALESREP[sr].SalesRepNumber;
+					//SalesRepDetail.salesrepname = records[i].value.SALESREP[sr].salesrepname;
+                    SalesRepDetail.camSystemGensalesrepKeyRef = records[i].value.SALESREP[sr].Id;
+                    SalesRepDetail.documentControl = sales_DocumentControl_List[sr];
+					SalesRepDetail.auditControl = AuditAttributes;
+                    SalesRepDetail_List.push(SalesRepDetail);
+                  }
+              }
+		   }
+		   
+		   //Oraganizationcontacmethodslist
+		   var org_contact_methodList = []	;	   
+		   var orgcmtList = [];
+		   if (records[i].value.ORGCONTACTMETHODS != null)
+		   {
+			   for(var cl=0; cl < records[i].value.ORGCONTACTMETHODS.length; cl++)
+			   {
+			   var orgmethod = {};
+			   var flag = true;			
+				for (var lis=0;lis<org_contact_methodList.length;lis++)
+				if(records[i].value.ORGCONTACTMETHODS[cl].usageTypeCode == org_contact_methodList[lis])
+				{
+                    flag = false;
+                    break;
+                }
+				  				
+				var DocumentControl ={};             
+                if(true)
+                  {
+                    DocumentControl.createdDate = records[i].value.ORGCONTACTMETHODS[cl].CreatedDate_CM;
+					DocumentControl.createdBy = records[i].value.ORGCONTACTMETHODS[cl].CreatedBy_CM;
+                    DocumentControl.modifiedDate = records[i].value.ORGCONTACTMETHODS[cl].ModifiedDate_CM;
+                    DocumentControl.modifiedBy = records[i].value.ORGCONTACTMETHODS[cl].ModifiedBy_CM;
+					DocumentControl.createdDateUTC = records[i].value.ORGCONTACTMETHODS[cl].CreatedDateUTC_CM;
+                    DocumentControl.modifiedDateUTC = records[i].value.ORGCONTACTMETHODS[cl].ModifiedDateUTC_CM;
+                    DocumentControl.endDate = records[i].value.ORGCONTACTMETHODS[cl].EndDate;
+					//orgDocumentControllist.push(DocumentControl);					
+				  }	
+				  
+                var legacyAttributes ={};
+				var items ={};              
+                if(true)
+                  {
+                    items.LEGACYORIGSYSADDRREF  = records[i].value.ORGCONTACTMETHODS[cl].XLEGACY_ORIG_SYS_ADDR_REF; 
+                    items.LEGACYGIIADDRESSID  = records[i].value.ORGCONTACTMETHODS[cl].xlegacy_gii_addres_id; 
+					legacyAttributes.items = items;
+                  } 
+              
+				  //phoneNumber
+				 var phoneNumber_org={};
+				 if(true){
+				    phoneNumber_org.countryCode = records[i].value.ORGCONTACTMETHODS[cl].CountryCode;
+					phoneNumber_org.areaCode = records[i].value.ORGCONTACTMETHODS[cl].AreaCode;
+					phoneNumber_org.number = records[i].value.ORGCONTACTMETHODS[cl].Number_1;
+					phoneNumber_org.extension = records[i].value.ORGCONTACTMETHODS[cl].EXTENSION;
+				 }
+				 
+				  				  
+				  //audit attributes  
+				 
+                /*var auditControl ={};
+                if(true)
+                  {
+                    auditControl.createdBySalesRepNt = records[i].value.ORGCONTACTMETHODS[cl].CREATEBYUSERNTID;
+                    auditControl.modifiedBySalesRepNt = records[i].value.ORGCONTACTMETHODS[cl].MODIFYBYUSERNTID;
+                    auditControl.createdByEmail = records[i].value.ORGCONTACTMETHODS[cl].CREATEBYUSEREMAILID;
+                    auditControl.modifiedByEmail = records[i].value.ORGCONTACTMETHODS[cl].MODIFYBYUSEREMAILID;
+					auditControl.createdBySalesRepId = records[i].value.ORGCONTACTMETHODS[cl].CreateBySalesRepId_orgcmt;
+					auditControl.modifiedBySalesRepId = records[i].value.ORGCONTACTMETHODS[cl].ModifyBySalesRepId_orgcmt;
+                    //org_AuditAttributes_List.push(auditControl);*/
+                  
+              				  
+				if(true)
+				{
+					orgmethod.usageTypeValue = records[i].value.ORGCONTACTMETHODS[cl].UsageTypeValue;
+					orgmethod.typeValue = records[i].value.ORGCONTACTMETHODS[cl].TypeValue;
+					orgmethod.purposeValue = records[i].value.ORGCONTACTMETHODS[cl].purposeValue;
+					orgmethod.documentControl = DocumentControl;
+					orgmethod.id = records[i].value.ORGCONTACTMETHODS[cl].Id;
+					orgmethod.usageTypeCode = records[i].value.ORGCONTACTMETHODS[cl].UsageTypeCode;
+					orgmethod.purpose = records[i].value.ORGCONTACTMETHODS[cl].purpose;
+					orgmethod.typeCode = records[i].value.ORGCONTACTMETHODS[cl].TypeCode;
+					orgmethod.fullPhoneNumber = records[i].value.ORGCONTACTMETHODS[cl].FullPhoneNumber;
+					orgmethod.phoneNumber = phoneNumber_org
+					/*orgmethod.countryCode = records[i].value.ORGCONTACTMETHODS[cl].CountryCode;
+					orgmethod.areaCode = records[i].value.ORGCONTACTMETHODS[cl].AreaCode;
+					orgmethod.number = records[i].value.ORGCONTACTMETHODS[cl].Number_1;
+					orgmethod.extension = records[i].value.ORGCONTACTMETHODS[cl].EXTENSION;*///1002 part 2 changes
+					orgmethod.emailAddress = records[i].value.ORGCONTACTMETHODS[cl].EmailAddress;
+					//orgmethod.isPrimary = records[i].value.ORGCONTACTMETHODS[cl].isPrimary;
+					orgmethod.stnInfo = records[i].value.ORGCONTACTMETHODS[cl].stninfo;
+					orgmethod.validationStatusCode = records[i].value.ORGCONTACTMETHODS[cl].validationStatusCode;
+					//organizationContactMethods.legacyAttributes = legacyAttributes;//NOT REQUIRED FOR customer owner role contact methods
+					//orgmethod.auditControl = auditControl;//auditControl 
+					orgmethod.validationDescription = records[i].value.ORGCONTACTMETHODS[cl].validationDescription;//validationDescription
+					orgmethod.isContactMethodVerified = records[i].value.ORGCONTACTMETHODS[cl].IsContactMethodVerified;//isContactMethodVerified
+                     orgmethod.contactMethodId = records[i].value.ORGCONTACTMETHODS[cl].contactMethodId;
+					orgcmtList.push(orgmethod);
+					org_contact_methodList.push(records[i].value.ORGCONTACTMETHODS[cl].usageTypeCode);					
+					
+				}
+			}				
+		   }
+		   
+		    //Notes DocumentControl
+            var Notes_DocumentControl_List = [];
+            if (records[i].value.NOTES != null)
+			{
+            for(var sr=0; sr < records[i].value.NOTES.length; sr++)
+              {
+                var DocumentControl ={};             
+                if(true)
+                  {
+                    DocumentControl.createdDate = records[i].value.NOTES[sr].CreatedDate;
+					DocumentControl.createdBy = null;
+                    DocumentControl.modifiedDate = records[i].value.NOTES[sr].ModifiedDate;
+                    DocumentControl.modifiedBy = records[i].value.NOTES[sr].ModifiedBy;
+					DocumentControl.createdDateUTC = records[i].value.NOTES[sr].createdDateUTC;//no utc fields in A_ALERT
+                    DocumentControl.modifiedDateUTC = records[i].value.NOTES[sr].modifiedDateUTC;//no utc fields in A_ALERT
+                    DocumentControl.endDate = records[i].value.NOTES[sr].EndDate;
+					Notes_DocumentControl_List.push(DocumentControl);
+				  }
+			  }
+			
+			//Notes
+            var Notes_List = [];
+			var NoteDetail={};
+            for(var sr=0; sr < records[i].value.NOTES.length ; sr++)
+              {
+                var Notes ={};
+                if(records[i].value.NOTES[sr].Id != undefined)
+                  {
+                    Notes.Id = records[i].value.NOTES[sr].Id;
+					NoteDetail.description = records[i].value.NOTES[sr].Description;
+                    NoteDetail.createdByUser=records[i].value.NOTES[sr].CreatedBy;
+                    Notes.noteDetail= NoteDetail;
+                    Notes.documentControl = Notes_DocumentControl_List[sr];
+                    Notes_List.push(Notes);
+                  }
+              }
+			}
+			else
+            Notes_List = [];
+
+             // Customer -DocumentControl
+            var event ={};
+            if (records[i].value.CUSTOMER != null)
+			{
+			for(var sr=0; sr < records[i].value.CUSTOMER.length ; sr++)
+			{	
+             var DocumentControl ={};
+             if(true)
+             {
+               DocumentControl.createdDate = records[i].value.CUSTOMER[sr].CreatedDate;
+               DocumentControl.createdBy = records[i].value.CUSTOMER[sr].CreatedBy;
+			   DocumentControl.createdDateUTC = records[i].value.CUSTOMER[sr].createdDateUTC;
+               DocumentControl.modifiedDate = records[i].value.CUSTOMER[sr].ModifiedDate;
+               DocumentControl.modifiedBy = records[i].value.CUSTOMER[sr].ModifiedBy;
+			   DocumentControl.modifiedDateUTC = records[i].value.CUSTOMER[sr].modifiedDateUTC;
+			   DocumentControl.endDate = records[i].value.CUSTOMER[sr].Enddate;
+               //cust_DocumentControl_List.push(DocumentControl)
+             }
+			 
+			var legacyAttributes ={};
+              var  items = {}; 
+             if(true)
+              {
+                items.DOMSCUSTOMERNUMBER = records[i].value.CUSTOMER[sr].LegacyCustomerNumber;
+                items.OMEGACUSTOMERNUMBER = records[i].value.CUSTOMER[sr].OmegaCustomerNumber;
+                items.LEGACYORIGSYSCUSTOMERREF = records[i].value.CUSTOMER[sr].OrigSystemCustomerRef;
+				items.GIICUSTOMERNUMBER = records[i].value.CUSTOMER[sr].LegacyCustomerNumber;
+				legacyAttributes.items = items;
+                //cust_LegacyCustomerAttributes_List.push(LegacyCustomerAttributes)
+              }  
+			var AuditAttributes ={};
+             if(true)
+              {
+                AuditAttributes.createdBySalesRepNt = records[i].value.CUSTOMER[sr].CreateByUserNtId;
+                AuditAttributes.modifiedBySalesRepNt = records[i].value.CUSTOMER[sr].ModifyByUserNtId;
+                AuditAttributes.createdByEmail = records[i].value.CUSTOMER[sr].CreateByUserEmailId;
+                AuditAttributes.modifiedByEmail = records[i].value.CUSTOMER[sr].ModifyByUserEmailId;
+				AuditAttributes.createdBySalesRepId = records[i].value.CUSTOMER[sr].CreateBySalesRepId;
+                AuditAttributes.modifiedBySalesRepId = records[i].value.CUSTOMER[sr].ModifyBySalesRepId;
+                //cust_AuditAttributes_List.push(AuditAttributes)
+              }
+			  
+			    //tax attributes
+				var Tax_List = [];
+				var TaxidentifiersList = [];
+                var customer_tax_file = state.flag;
+				if (records[i].value.CUSTOMER != null) 
+				{
+				 for(var cl=0; cl < records[i].value.CUSTOMER.length ; cl++)
+				 {
+				  var flag = true;
+				  for (var lis=0;lis<TaxidentifiersList.length;lis++)
+				  if(records[i].value.CUSTOMER[cl].CAM_TAX_IDENTIFIER_ID == TaxidentifiersList[lis])
+				  {
+                   flag = false;
+                   break;
+				  }
+		   
+				var taxAttributes ={};
+				//if(flag==true)
+				if(flag==true && records[i].value.CUSTOMER[cl].CAM_TAX_IDENTIFIER_ID != null)  
+				{	
+                  if(customer_tax_file =="X")
+                    {
+					taxAttributes.number = records[i].value.CUSTOMER[cl].TaxNumber;
+                    }
+					taxAttributes.encryptedNumber = records[i].value.CUSTOMER[cl].custTaxNumberEncrypt;
+                    taxAttributes.hashedNumber = records[i].value.CUSTOMER[cl].custTaxNumberHash;
+					taxAttributes.type = records[i].value.CUSTOMER[cl].TaxType;
+					taxAttributes.subType = records[i].value.CUSTOMER[cl].TaxSubType;	
+                    taxAttributes.validationStatus = records[i].value.CUSTOMER[cl].ValidationStatus;
+					taxAttributes.validationExpiryDate = records[i].value.CUSTOMER[cl].ValidationExpiryDate;
+					taxAttributes.taxOfficeNumber = records[i].value.CUSTOMER[cl].TaxOffcNumber;
+					taxAttributes.validationMessage = records[i].value.CUSTOMER[cl].TaxErrorCode;					
+                  taxAttributes.endDate = records[i].value.CUSTOMER[cl].Taxenddate;
+                    Tax_List.push(taxAttributes);
+                    TaxidentifiersList.push(records[i].value.CUSTOMER[cl].CAM_TAX_IDENTIFIER_ID);
+				}					
+				 }
+				}
+			  
+			var customerName ={};
+            if(true)
+            {
+             customerName.name = records[i].value.CUSTOMER[sr].CustomerName;
+			 customerName.nameExtensionOne = records[i].value.CUSTOMER[sr].nameExtensionOne;
+			 customerName.nameExtensionTwo = records[i].value.CUSTOMER[sr].nameExtensionTwo;
+             customerName.fullName = records[i].value.CUSTOMER[sr].AgreementName;
+			 customerName.legalName = records[i].value.CUSTOMER[sr].AgreementFullName;
+			 if (records[i].value.CUSTOMER[sr].AgreementFullName != null)
+			 {
+				customerName.legalNameSource = records[i].value.CUSTOMER[sr].legalNameSource;
+			 }
+			else
+			{
+				customerName.legalNameSource = null;
+			}
+			var alternateLanguagesListCustName=[];
+            var EN_FLAG_NAME = 'Y';
+			var JP_FLAG_NAME = 'Y';
+            var EN_alternateLanguagesCustName={};  
+            var JP_alternateLanguagesCustName ={};
+
+			if (records[i].value.CUSTOMER[sr]['ENCustomerName'] != null || records[i].value.CUSTOMER[sr]['En_AgreementName'] != null)
+            {
+             EN_alternateLanguagesCustName.languageCode = "EN";
+             EN_alternateLanguagesCustName.name = records[i].value.CUSTOMER[sr]['ENCustomerName'];
+             EN_alternateLanguagesCustName.fullName = records[i].value.CUSTOMER[sr]['En_AgreementName'];
+			  EN_alternateLanguagesCustName.nameExtensionOne = records[i].value.CUSTOMER[sr]['XEN_AGREEMENT_NAME_EXT1'];
+			 EN_alternateLanguagesCustName.nameExtensionTwo = records[i].value.CUSTOMER[sr]['XEN_AGREEMENT_NAME_EXT2'];
+			 EN_alternateLanguagesCustName.legalName = records[i].value.CUSTOMER[sr]['EN_LegalName'];
+             alternateLanguagesListCustName.push(EN_alternateLanguagesCustName);
+             EN_FLAG_NAME = 'N';
+            }
+
+			if (records[i].value.CUSTOMER[sr]['JPCustomerName'] != null || records[i].value.CUSTOMER[sr]['Jp_AgreementName'] != null)
+            {
+             JP_alternateLanguagesCustName.languageCode = "JP";
+             JP_alternateLanguagesCustName.name = records[i].value.CUSTOMER[sr]['JPCustomerName'];
+             JP_alternateLanguagesCustName.fullName = records[i].value.CUSTOMER[sr]['Jp_AgreementName'];
+			 JP_alternateLanguagesCustName.nameExtensionOne = records[i].value.CUSTOMER[sr]['XJP_AGREEMENT_NAME_EXT1'];
+			 JP_alternateLanguagesCustName.nameExtensionTwo = records[i].value.CUSTOMER[sr]['XJP_AGREEMENT_NAME_EXT2'];
+			 JP_alternateLanguagesCustName.legalName = records[i].value.CUSTOMER[sr]['JP_LegalName'];
+             alternateLanguagesListCustName.push(JP_alternateLanguagesCustName);
+             JP_FLAG_NAME = 'N';
+            }
+             customerName.alternateLanguages=alternateLanguagesListCustName;
+			}
+			 
+			var CustomerAttributes ={};
+			if(true)
+             {       
+              CustomerAttributes.DellCustomerNumber = records[i].value.CUSTOMER[sr].DellCustomerNumber;
+              CustomerAttributes.BusinessUnitIdnew = records[i].value.CUSTOMER[sr].BusinessUnitId;
+			  CustomerAttributes.CamSystemGenCustomerKeyRef = records[i].value.CUSTOMER[sr].CamSystemGenCustomerKeyRef;
+			  CustomerAttributes.StatusType = records[i].value.CUSTOMER[sr].StatusType;
+			  CustomerAttributes.StatusValue = records[i].value.CUSTOMER[sr].StatusValue;
+			  //reasoncode and reasondescription
+			  CustomerAttributes.reasoncode = records[i].value.CUSTOMER[sr].reasoncode;//new
+			  CustomerAttributes.reasondescrption = records[i].value.CUSTOMER[sr].reasondescrption;//new
+			  CustomerAttributes.reasoncomments = records[i].value.CUSTOMER[sr].reasoncomments;//new
+			  CustomerAttributes.AgreementName = records[i].value.CUSTOMER[sr].AgreementName;
+			  CustomerAttributes.AgreementFullName = records[i].value.CUSTOMER[sr].AgreementFullName;
+			  CustomerAttributes.En_AgreementFullName = records[i].value.CUSTOMER[sr].En_AgreementFullName; //New
+			  CustomerAttributes.CurrencyTypeCode = records[i].value.CUSTOMER[sr].CurrencyTypeValue;
+			  CustomerAttributes.CurrencyTypeValue = records[i].value.CUSTOMER[sr].CurrencyTypeCode;
+			  CustomerAttributes.LanguageCode = records[i].value.CUSTOMER[sr].LanguageCode;
+			  CustomerAttributes.LanguageValue = records[i].value.CUSTOMER[sr].LanguageValue;
+			  CustomerAttributes.ShipChargeFlag = records[i].value.CUSTOMER[sr].ShipChargeFlag;
+			  CustomerAttributes.TaxableFlag = records[i].value.CUSTOMER[sr].TaxableFlag;
+			  CustomerAttributes.CustomerAccountType = records[i].value.CUSTOMER[sr].CustomerAccountType;
+			  CustomerAttributes.CustomerAccountTypeValue = records[i].value.CUSTOMER[sr].CustomerAccountTypeValue;
+			  CustomerAttributes.CreditLimit = records[i].value.CUSTOMER[sr].CreditLimit;
+			  CustomerAttributes.CustomerType = records[i].value.CUSTOMER[sr].customerType;
+			  CustomerAttributes.PayCode = records[i].value.CUSTOMER[sr].PayCode;
+			  CustomerAttributes.PaymentTerm = records[i].value.CUSTOMER[sr].PaymentTerm;
+			  CustomerAttributes.CustomerCategory = records[i].value.CUSTOMER[sr].CustomerCategory;
+			  CustomerAttributes.SalesChannel = records[i].value.CUSTOMER[sr].SalesChannel;
+			  CustomerAttributes.Segment = records[i].value.CUSTOMER[sr].Segment;
+			  CustomerAttributes.BusinessSegment = records[i].value.CUSTOMER[sr].BusinessSegment; //New
+			  CustomerAttributes.EndUserAuthorizationCode = records[i].value.CUSTOMER[sr].EndUserAuthorizationCode;
+			  CustomerAttributes.LinkNumberDescription = records[i].value.CUSTOMER[sr].LinkNumberDescription;
+			 // CustomerAttributes.OrganizationName = records[i].value.CUSTOMER[sr].OrganizationName;--0802 changes
+			  CustomerAttributes.OrganizationFullName= records[i].value.CUSTOMER[sr].OrganizationFullName;
+              CustomerAttributes.IsTermsCustomer = records[i].value.CUSTOMER[sr].IsTermsCustomer;
+			  CustomerAttributes.gdprEnabled= records[i].value.CUSTOMER[sr].gdprEnabled;
+			  CustomerAttributes.ChmaId = records[i].value.CUSTOMER[sr].ChmaId;
+              CustomerAttributes.receiverBusinessRange = records[i].value.CUSTOMER[sr].receiverBusinessRange;//NEW
+              CustomerAttributes.receiverBusinessType = records[i].value.CUSTOMER[sr].receiverBusinessType;//NEW
+			  CustomerAttributes.CompanyRegistrationNumber = records[i].value.CUSTOMER[sr].companyRegistrationNumber;
+			  CustomerAttributes.HideBillTo = records[i].value.CUSTOMER[sr].HideBillTo;
+			  CustomerAttributes.isCpfCustomer= records[i].value.CUSTOMER[sr].isCpfCustomer;
+              CustomerAttributes.regimenFiscal= records[i].value.CUSTOMER[sr].RegimenFiscal;
+                CustomerAttributes.ReplacedByDcn= records[i].value.CUSTOMER[sr].ReplacedByDcn;
+			 }  
+			}
+			}
+			
+			  records[i].value.dellCustomerNumber = CustomerAttributes.DellCustomerNumber;
+			  records[i].value.businessUnitId = CustomerAttributes.BusinessUnitIdnew;
+			  records[i].value.camSystemGenCustomerKeyRef = CustomerAttributes.CamSystemGenCustomerKeyRef;
+			  records[i].value.statusType = CustomerAttributes.StatusType;
+			  records[i].value.status = CustomerAttributes.StatusValue;
+			  //reasoncode and reaasondescription
+			  records[i].value.reasoncode = CustomerAttributes.reasoncode;
+			  records[i].value.reasondescription = CustomerAttributes.reasondescrption;
+			  records[i].value.reasoncomments = CustomerAttributes.reasoncomments;
+			  records[i].value.currency = CustomerAttributes.CurrencyTypeCode;
+			  records[i].value.currencyTypeCode = CustomerAttributes.CurrencyTypeValue;//1002 changes
+			  //records[i].value.languageCode = CustomerAttributes.LanguageCode;
+			  //records[i].value.language = CustomerAttributes.LanguageValue;
+			  records[i].value.languageCode = null;
+			  records[i].value.language = null;
+			  records[i].value.shipChargeFlag = CustomerAttributes.ShipChargeFlag;
+			  records[i].value.taxableFlag = CustomerAttributes.TaxableFlag;
+			  records[i].value.customerAccountType = CustomerAttributes.CustomerAccountType;//1002 changes
+			  records[i].value.customerAccountTypeValue = CustomerAttributes.CustomerAccountTypeValue;//1002 changes
+			  records[i].value.creditLimit = CustomerAttributes.CreditLimit;
+			  records[i].value.customerType = CustomerAttributes.CustomerType;
+			  records[i].value.payCode = CustomerAttributes.PayCode;
+			  records[i].value.paymentTermCode = CustomerAttributes.PaymentTerm;
+			  records[i].value.customerCategory = CustomerAttributes.CustomerCategory;
+			  records[i].value.salesChannel = CustomerAttributes.SalesChannel;
+			  records[i].value.segment = CustomerAttributes.Segment;
+		   	  records[i].value.businessSegment = CustomerAttributes.BusinessSegment; //New 
+			  records[i].value.endUserAuthorizationCode = CustomerAttributes.EndUserAuthorizationCode;
+			  records[i].value.linkNumberDescription = CustomerAttributes.LinkNumberDescription;
+			  //records[i].value.organizationName = CustomerAttributes.OrganizationName; --0802 changes
+              records[i].value.isTermsCustomer = CustomerAttributes.IsTermsCustomer;
+			  records[i].value.transactionDate= records[i].value.TRANSACTIONDATE;
+			  records[i].value.correlationId= records[i].value.correlationid;
+		      records[i].value.transactionId = records[i].value.transactionid;
+			  records[i].value.gdprEnabled= CustomerAttributes.gdprEnabled;
+			  records[i].value.cpfGroupId = CustomerAttributes.ChmaId;//1002 
+              records[i].value.receiverBusinessRange = CustomerAttributes.receiverBusinessRange;//NEW
+              records[i].value.receiverBusinessType = CustomerAttributes.receiverBusinessType;//NEW
+			  records[i].value.companyRegistrationNumber = CustomerAttributes.CompanyRegistrationNumber;
+			  records[i].value.hideBillTo = CustomerAttributes.HideBillTo;
+			  records[i].value.isCpfCustomer = CustomerAttributes.isCpfCustomer;
+              records[i].value.regimenFiscal = CustomerAttributes.regimenFiscal;
+               records[i].value.ReplacedByDcn = CustomerAttributes.ReplacedByDcn;
+              records[i].value.eventType = "create_customer";
+              records[i].value.organizationContactMethods = orgcmtList;			  
+			  records[i].value.salesPersons=SalesRepDetail_List;
+			  records[i].value.contacts = contactsList;
+			  records[i].value.sites = Sites_List;			  
+			  records[i].value.documentControl = DocumentControl;
+			  records[i].value.legacyAttributes = legacyAttributes;
+			  records[i].value.auditControl = AuditAttributes;
+			  records[i].value.customerName = customerName;
+			  records[i].value.taxIdentifiers = Tax_List;
+			  records[i].value.notes = Notes_List;
+			  
+		  
+		  sdc.output.write(records[i]);
+          } catch (e) {
+          sdc.error.write(records[i], e);
+      }
+  }
