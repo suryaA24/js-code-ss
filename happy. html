@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: yellow;
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        #message-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #message, #options, #happy-message, #sad-message, #surprise-message {
+            font-size: 24px;
+            font-weight: bold;
+            display: none;
+        }
+
+        a, button {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px 30px;
+            background-color: rgba(255, 215, 0, 0.7); /* Yellow background */
+            border-radius: 10px;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        a:hover, button:hover {
+            background-color: rgba(255, 215, 0, 1); /* Bright yellow on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        #minion {
+            width: 150px;
+            height: auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="message-container">
+        <div id="initial-message">
+            <a href="#" onclick="showInitialMessage()">Click me</a>
+        </div>
+        <div id="message">Hi, how are you?</div>
+        <div id="options">
+            <button onclick="showHappinessMessage()">Happy</button>
+            <button onclick="showSadnessMessage()">Sad</button>
+        </div>
+        <div id="happy-message">Okay, stay happy, be happy always, and keep a smile on your face!</div>
+        <div id="sad-message">
+            Hi Minions, why are you sad? What happened to you? Don’t worry, everything is going to be all right.
+            <br><br>
+            <a href="#" onclick="showSurpriseMessage()" style="font-size: 28px; background-color: rgba(0, 128, 0, 0.7); color: white;">Have a surprise over here</a>
+        </div>
+        <div id="surprise-message">
+            You are going to be placed in a very good company with a very good package soon!
+        </div>
+        <img id="minion" src="https://i.imgur.com/9gPZk1I.png" alt="Minion">
+    </div>
+
+    <script>
+        function showInitialMessage() {
+            document.getElementById("message").style.display = "block";
+            document.getElementById("options").style.display = "flex";
+            document.getElementById("happy-message").style.display = "none";
+            document.getElementById("sad-message").style.display = "none";
+            document.getElementById("surprise-message").style.display = "none";
+            document.getElementById("minion").style.display = "none";
+        }
+
+        function showHappinessMessage() {
+            document.getElementById("message").style.display = "none";
+            document.getElementById("options").style.display = "none";
+            document.getElementById("happy-message").style.display = "block";
+            document.getElementById("minion").style.display = "block";
+            document.getElementById("sad-message").style.display = "none";
+            document.getElementById("surprise-message").style.display = "none";
+        }
+
+        function showSadnessMessage() {
+            document.getElementById("message").style.display = "none";
+            document.getElementById("options").style.display = "none";
+            document.getElementById("sad-message").style.display = "block";
+            document.getElementById("minion").style.display = "block";
+            document.getElementById("happy-message").style.display = "none";
+            document.getElementById("surprise-message").style.display = "none";
+        }
+
+        function showSurpriseMessage() {
+            document.getElementById("sad-message").style.display = "none";
+            document.getElementById("surprise-message").style.display = "block";
+            document.getElementById("minion").style.display = "none";
+        }
+    </script>
+</body>
+</html>
